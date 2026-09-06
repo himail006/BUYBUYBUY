@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="代買資訊整合入口，集中管理各國代購、商品清單、價格與採購資訊。" />
+  <title>代買整合中心</title>
+  <style>
+    :root{
+      --bg:#f6f7fb;
+      --surface:#ffffff;
+      --surface-2:#f0f3f9;
+      --text:#172033;
+      --muted:#667085;
+      --line:#e4e7ec;
+      --brand:#315efb;
+      --brand-2:#6c8cff;
+      --ok:#027a48;
+      --warn:#b54708;
+      --shadow:0 14px 40px rgba(16,24,40,.08);
+      --radius:22px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Noto Sans TC", sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at 8% -10%, rgba(49,94,251,.10), transparent 32%),
+        radial-gradient(circle at 95% 8%, rgba(108,140,255,.12), transparent 27%),
+        var(--bg);
+    }
+    a{color:inherit;text-decoration:none}
+    .wrap{max-width:1180px;margin:auto;padding:28px 24px 64px}
+    header{
+      display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:46px;
+    }
+    .brand{display:flex;align-items:center;gap:13px;font-weight:800;letter-spacing:.2px}
+    .brand-mark{
+      width:42px;height:42px;border-radius:13px;display:grid;place-items:center;color:white;
+      background:linear-gradient(135deg,var(--brand),var(--brand-2));box-shadow:0 10px 24px rgba(49,94,251,.28);
+    }
+    .brand small{display:block;color:var(--muted);font-weight:600;font-size:12px;margin-top:2px}
+    .top-actions{display:flex;gap:10px;align-items:center}
+    .pill{padding:9px 13px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.76);color:var(--muted);font-size:13px}
+
+    .hero{
+      position:relative;overflow:hidden;
+      padding:38px;border-radius:28px;background:linear-gradient(135deg,#14213d,#2446b6 68%,#4774ff);color:#fff;
+      box-shadow:var(--shadow);margin-bottom:28px;
+    }
+    .hero:after{content:"";position:absolute;right:-90px;top:-120px;width:340px;height:340px;border:1px solid rgba(255,255,255,.22);border-radius:50%;box-shadow:0 0 0 54px rgba(255,255,255,.045),0 0 0 108px rgba(255,255,255,.025)}
+    .hero-inner{position:relative;z-index:1;max-width:760px}
+    .eyebrow{font-size:13px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;opacity:.78}
+    h1{font-size:clamp(32px,5vw,54px);line-height:1.08;margin:12px 0 15px;letter-spacing:-.035em}
+    .hero p{font-size:17px;line-height:1.75;margin:0;color:rgba(255,255,255,.82)}
+    .hero-meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+    .hero-chip{font-size:13px;padding:8px 11px;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.16)}
+
+    .toolbar{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;margin:30px 0 18px}
+    .search{position:relative}
+    .search input{width:100%;height:48px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.92);padding:0 16px 0 44px;font-size:15px;outline:none;transition:.2s}
+    .search input:focus{border-color:#9db2ff;box-shadow:0 0 0 4px rgba(49,94,251,.08)}
+    .search svg{position:absolute;left:15px;top:50%;transform:translateY(-50%);color:#98a2b3}
+    .count{color:var(--muted);font-size:14px;white-space:nowrap}
+
+    .section-title{display:flex;align-items:end;justify-content:space-between;gap:16px;margin:18px 0 16px}
+    .section-title h2{font-size:22px;margin:0;letter-spacing:-.02em}
+    .section-title p{margin:4px 0 0;color:var(--muted);font-size:14px}
+
+    .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+    .card{
+      position:relative;display:flex;flex-direction:column;min-height:270px;padding:22px;border-radius:var(--radius);
+      background:rgba(255,255,255,.95);border:1px solid rgba(228,231,236,.9);box-shadow:0 8px 24px rgba(16,24,40,.05);
+      transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    }
+    .card.active{cursor:pointer}
+    .card.active:hover{transform:translateY(-4px);box-shadow:0 18px 42px rgba(16,24,40,.11);border-color:#cbd5ff}
+    .card.muted{background:rgba(255,255,255,.62);box-shadow:none}
+    .card-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+    .icon{width:48px;height:48px;border-radius:15px;display:grid;place-items:center;font-size:24px;background:var(--surface-2)}
+    .active .icon{background:#eef2ff}
+    .status{font-size:12px;font-weight:800;padding:7px 9px;border-radius:999px;background:#ecfdf3;color:var(--ok)}
+    .status.soon{background:#fff7ed;color:var(--warn)}
+    .card h3{font-size:20px;line-height:1.35;margin:20px 0 8px;letter-spacing:-.02em}
+    .card p{font-size:14px;line-height:1.65;color:var(--muted);margin:0}
+    .tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:15px}
+    .tag{font-size:12px;padding:6px 9px;border-radius:999px;background:#f2f4f7;color:#475467}
+    .card-footer{margin-top:auto;padding-top:22px;display:flex;align-items:center;justify-content:space-between;color:var(--brand);font-weight:800;font-size:14px}
+    .muted .card-footer{color:#98a2b3}
+    .arrow{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#eef2ff;transition:.2s}
+    .active:hover .arrow{transform:translateX(3px)}
+
+    .guide{
+      margin-top:28px;padding:22px 24px;border-radius:20px;border:1px dashed #cbd5e1;background:rgba(255,255,255,.55);
+      display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:start;
+    }
+    .guide b{display:block;margin-bottom:4px}
+    .guide p{margin:0;color:var(--muted);font-size:14px;line-height:1.7}
+    code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#eef2f6;padding:2px 6px;border-radius:6px;font-size:12px}
+    footer{margin-top:34px;text-align:center;color:#98a2b3;font-size:12px}
+    .hidden{display:none!important}
+
+    @media (max-width:900px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hero{padding:30px}.wrap{padding:22px 18px 50px}}
+    @media (max-width:640px){
+      header{align-items:flex-start;margin-bottom:28px}.top-actions{display:none}.hero{padding:26px 22px;border-radius:22px}.hero p{font-size:15px}.toolbar{grid-template-columns:1fr}.count{display:none}.grid{grid-template-columns:1fr}.card{min-height:235px}.section-title{align-items:start;flex-direction:column}.guide{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <div class="brand">
+        <div class="brand-mark">買</div>
+        <div>代買整合中心<small>Shopping Hub / Purchase Portal</small></div>
+      </div>
+      <div class="top-actions">
+        <span class="pill">可擴充首頁</span>
+        <span class="pill">Responsive</span>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="hero-inner">
+        <div class="eyebrow">Personal Shopping Portal</div>
+        <h1>把所有代買資訊，集中在一個入口。</h1>
+        <p>依國家、品類或用途整理代買頁面。之後新增商品清單、價格比較、物流資訊或訂單追蹤，都可以直接從這個首頁擴充。</p>
+        <div class="hero-meta">
+          <span class="hero-chip">🇺🇸 美國</span>
+          <span class="hero-chip">🇯🇵 日本</span>
+          <span class="hero-chip">商品清單</span>
+          <span class="hero-chip">價格 / 截圖</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="toolbar">
+      <label class="search" aria-label="搜尋代買頁面">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.6-3.6"></path></svg>
+        <input id="searchInput" type="search" placeholder="搜尋國家、品類或關鍵字…" />
+      </label>
+      <div class="count"><span id="resultCount">6</span> 個入口</div>
+    </div>
+
+    <div class="section-title">
+      <div><h2>代買頁面</h2><p>已完成的頁面可直接進入；其他區塊保留作為之後擴充。</p></div>
+    </div>
+
+    <section class="grid" id="cardGrid">
+      <a class="card active" href="美國代購藥品_閱讀版.html" data-search="美國 代購 藥品 保健品 amazon 亞馬遜 價格 截圖">
+        <div class="card-top"><div class="icon">💊</div><span class="status">可使用</span></div>
+        <h3>美國代購｜藥品・保健品</h3>
+        <p>整合 Excel 商品資訊、數量、Amazon 價格與商品頁截圖，方便快速查閱與採購。</p>
+        <div class="tags"><span class="tag">Amazon</span><span class="tag">藥品 / 保健品</span><span class="tag">美國</span></div>
+        <div class="card-footer"><span>開啟閱讀版</span><span class="arrow">→</span></div>
+      </a>
+
+      <article class="card muted" data-search="美國 代購 一般商品 日用品 電子 服飾">
+        <div class="card-top"><div class="icon">🇺🇸</div><span class="status soon">規劃中</span></div>
+        <h3>美國代購｜一般商品</h3>
+        <p>預留給日用品、電子產品、服飾與其他美國採購項目。</p>
+        <div class="tags"><span class="tag">一般商品</span><span class="tag">美國</span></div>
+        <div class="card-footer"><span>Coming soon</span><span class="arrow">＋</span></div>
+      </article>
+
+      <article class="card muted" data-search="日本 代購 藥妝 雜貨 周邊 商品">
+        <div class="card-top"><div class="icon">🇯🇵</div><span class="status soon">規劃中</span></div>
+        <h3>日本代購</h3>
+        <p>預留給日本藥妝、雜貨、限定商品與角色周邊等採購清單。</p>
+        <div class="tags"><span class="tag">日本</span><span class="tag">藥妝 / 雜貨</span></div>
+        <div class="card-footer"><span>Coming soon</span><span class="arrow">＋</span></div>
+      </article>
+
+      <article class="card muted" data-search="價格 比價 匯率 成本 運費 關稅 計算">
+        <div class="card-top"><div class="icon">💰</div><span class="status soon">規劃中</span></div>
+        <h3>價格與成本試算</h3>
+        <p>之後可加入匯率、國際運費、關稅與每件商品分攤成本。</p>
+        <div class="tags"><span class="tag">成本</span><span class="tag">匯率</span><span class="tag">運費</span></div>
+        <div class="card-footer"><span>Coming soon</span><span class="arrow">＋</span></div>
+      </article>
+
+      <article class="card muted" data-search="訂單 追蹤 採購 進度 到貨 付款">
+        <div class="card-top"><div class="icon">📦</div><span class="status soon">規劃中</span></div>
+        <h3>訂單・到貨追蹤</h3>
+        <p>可擴充為採購進度、付款狀態、物流追蹤與到貨確認頁面。</p>
+        <div class="tags"><span class="tag">訂單</span><span class="tag">物流</span></div>
+        <div class="card-footer"><span>Coming soon</span><span class="arrow">＋</span></div>
+      </article>
+
+      <article class="card muted" data-search="客戶 名單 分配 alan bella 數量 代買人">
+        <div class="card-top"><div class="icon">👥</div><span class="status soon">規劃中</span></div>
+        <h3>代買人・商品分配</h3>
+        <p>可整理每位代買人的商品數量、分配明細、應收款與交付狀態。</p>
+        <div class="tags"><span class="tag">分配</span><span class="tag">數量</span></div>
+        <div class="card-footer"><span>Coming soon</span><span class="arrow">＋</span></div>
+      </article>
+    </section>
+
+    <section class="guide">
+      <div class="icon">🧩</div>
+      <div>
+        <b>之後要擴充很簡單</b>
+        <p>把新的 HTML 頁面放在和 <code>index.html</code> 同一個資料夾，再複製一張卡片、修改 <code>href</code> 與標題即可。這樣首頁可以一直作為所有代買頁面的總入口。</p>
+      </div>
+    </section>
+
+    <footer>代買整合中心 · index.html</footer>
+  </main>
+
+  <script>
+    const input = document.getElementById('searchInput');
+    const cards = [...document.querySelectorAll('#cardGrid .card')];
+    const count = document.getElementById('resultCount');
+    input.addEventListener('input', () => {
+      const q = input.value.trim().toLowerCase();
+      let visible = 0;
+      cards.forEach(card => {
+        const haystack = (card.textContent + ' ' + (card.dataset.search || '')).toLowerCase();
+        const match = !q || haystack.includes(q);
+        card.classList.toggle('hidden', !match);
+        if (match) visible++;
+      });
+      count.textContent = visible;
+    });
+  </script>
+</body>
+</html>
